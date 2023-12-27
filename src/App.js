@@ -11,6 +11,7 @@ function App() {
   const [redoStack, setRedoStack] = useState([]);
   const [isOpen, setIsOpen] = useState(true);
   const [drawingMode, setDrawingMode] = useState('pen');
+  const [penColor, setPenColor] = useState('#000000'); // black
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -22,10 +23,10 @@ function App() {
     const context = canvas.getContext("2d");
     context.scale(2, 2);
     context.lineCap = "round";
-    context.strokeStyle = "black";
+    context.strokeStyle = penColor;
     context.lineWidth = 5;
     contextRef.current = context;
-  }, []);
+  }, [penColor]);
 
   const startDrawing = ({ nativeEvent }) => {
     const { offsetX, offsetY } = nativeEvent;
@@ -111,6 +112,11 @@ function App() {
     setDrawingMode((prevMode) => (prevMode === 'pen' ? 'rectangle' : 'pen'));
   };
 
+  const setPenColorAndMode = (color) => {
+    setPenColor(color);
+    setDrawingMode('pen');
+  };
+
   return (
     <div>
       <div>
@@ -126,9 +132,29 @@ function App() {
         <button className="text-2xl bg-slate-200 m-2 p-2 transition-all hover:bg-slate-400 hover:scale-110" onClick={undo}>Undo</button>
         <button className="text-2xl bg-slate-200 m-2 p-2 transition-all hover:bg-slate-400 hover:scale-110" onClick={redo}>Redo</button>
         <button className="text-2xl bg-slate-200 m-2 p-2 transition-all hover:bg-slate-400 hover:scale-110" onClick={clear}>Clear</button>
-        <button className="text-2xl bg-slate-200 m-2 p-2 transition-all hover:bg-slate-400 hover:scale-110" onClick={toggleDrawingMode}>
+        <div className="flex">
+          <button
+            className={`text-2xl m-2 p-2 transition-all bg-red-400 hover:bg-red-600 hover:scale-110`}
+            onClick={() => setPenColorAndMode('#FF0000')}
+          >
+            Red
+          </button>
+          <button
+            className={`text-2xl m-2 p-2 transition-all bg-black hover:bg-gray-600 hover:scale-110`}
+            onClick={() => setPenColorAndMode('#000000')}
+          >
+            Black
+          </button>
+          <button
+            className={`text-2xl m-2 p-2 transition-all bg-blue-400 hover:bg-blue-600 hover:scale-110`}
+            onClick={() => setPenColorAndMode('#0000FF')}
+          >
+            Blue
+          </button>
+        </div>
+        {/* <button className="text-2xl bg-slate-200 m-2 p-2 transition-all hover:bg-slate-400 hover:scale-110" onClick={toggleDrawingMode}>
           {drawingMode === 'pen' ? 'Draw Rectangle' : 'Draw Pen'}
-        </button>
+        </button> */}
       </div>
       <canvas
         onMouseDown={startDrawing}
