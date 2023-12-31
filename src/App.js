@@ -10,7 +10,6 @@ function App() {
   const [drawing, setDrawing] = useState([]);
   const [redoStack, setRedoStack] = useState([]);
   const [isOpen, setIsOpen] = useState(true);
-  const [drawingMode, setDrawingMode] = useState('pen');
   const [penColor, setPenColor] = useState('#000000'); // black
 
   useEffect(() => {
@@ -23,9 +22,14 @@ function App() {
     const context = canvas.getContext("2d");
     context.scale(2, 2);
     context.lineCap = "round";
-    context.strokeStyle = penColor;
     context.lineWidth = 5;
     contextRef.current = context;
+  }, []);
+
+  useEffect(() => {
+    if (contextRef.current) {
+      contextRef.current.strokeStyle = penColor;
+    }
   }, [penColor]);
 
   const startDrawing = ({ nativeEvent }) => {
@@ -39,7 +43,7 @@ function App() {
     contextRef.current.closePath();
     setIsDrawing(false);
     if (drawing.length > 0) {
-      setUndoStack([...undoStack, drawing]);
+      setUndoStack([...undoStack,  drawing]);
       setDrawing([]);
       setRedoStack([]);
     }
@@ -100,7 +104,6 @@ function App() {
     }
   };
 
-
   const clear = () => {
     contextRef.current.clearRect(0,0, canvasRef.current.width, canvasRef.current.height);
     setUndoStack([]);
@@ -108,13 +111,8 @@ function App() {
     setRedoStack([]);
   }
 
-  const toggleDrawingMode = () => {
-    setDrawingMode((prevMode) => (prevMode === 'pen' ? 'rectangle' : 'pen'));
-  };
-
   const setPenColorAndMode = (color) => {
     setPenColor(color);
-    setDrawingMode('pen');
   };
 
   return (
@@ -152,9 +150,6 @@ function App() {
             Blue
           </button>
         </div>
-        {/* <button className="text-2xl bg-slate-200 m-2 p-2 transition-all hover:bg-slate-400 hover:scale-110" onClick={toggleDrawingMode}>
-          {drawingMode === 'pen' ? 'Draw Rectangle' : 'Draw Pen'}
-        </button> */}
       </div>
       <canvas
         onMouseDown={startDrawing}
@@ -162,7 +157,6 @@ function App() {
         onMouseMove={draw}
         ref={canvasRef}
       />
-      
     </div>
   );
 }
